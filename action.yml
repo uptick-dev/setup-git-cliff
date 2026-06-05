@@ -1,0 +1,57 @@
+name: Setup git-cliff
+description: >-
+  Install a pinned, prebuilt git-cliff binary (no Rust toolchain, no Docker) and
+  add it to PATH. A stable alternative to actions that build git-cliff from source.
+
+inputs:
+  version:
+    description: git-cliff release version to install (without a leading "v").
+    required: false
+    default: "2.12.0"
+
+outputs:
+  version:
+    description: The git-cliff version that was installed.
+    value: ${{ inputs.version }}
+  path:
+    description: Absolute path to the installed git-cliff binary.
+    value: ${{ steps.install.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install git-cliff
+      id: install
+      shell: bash
+      env:
+        GIT_CLIFF_VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+
+        os="$(uname -s)"
+        arch="$(uname -m)"
+        case "$os" in
+          Linux)  vendor="unknown-linux-gnu" ;;
+          Darwin) vendor="apple-darwin" ;;
+          *) echo "::error::setup-git-cliff: unsupported OS '$os'"; exit 1 ;;
+        esac
+        case "$arch" in
+          x86_64|amd64)  cpu="x86_64" ;;
+          aarch64|arm64) cpu="aarch64" ;;
+          *) echo "::error::setup-git-cliff: unsupported architecture '$arch'"; exit 1 ;;
+        esac
+
+        target="${cpu}-${vendor}"
+        dest="${RUNNER_TEMP:-/tmp}/git-cliff-${GIT_CLIFF_VERSION}"
+        url="https://github.com/orhun/git-cliff/releases/download/v${GIT_CLIFF_VERSION}/git-cliff-${GIT_CLIFF_VERSION}-${target}.tar.gz"
+
+        mkdir -p "$dest"
+        echo "Installing git-cliff ${GIT_CLIFF_VERSION} (${target})"
+        echo "  from $url"
+        curl -fsSL --retry 3 "$url" \
+          | tar -xz --strip-components=1 -C "$dest" "git-cliff-${GIT_CLIFF_VERSION}/git-cliff"
+        chmod +x "$dest/git-cliff"
+
+        echo "$dest" >> "$GITHUB_PATH"
+        echo "path=$dest/git-cliff" >> "$GITHUB_OUTPUT"
+        "$dest/git-cliff" --version

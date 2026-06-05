@@ -1,0 +1,20 @@
+# Example: install git-cliff, then generate an unreleased changelog.
+name: Changelog
+
+on:
+  pull_request:
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # git-cliff needs full history
+
+      - uses: ten-thousand-hammers/setup-git-cliff@v1
+        with:
+          version: "2.12.0"
+
+      - name: Generate changelog
+        run: git-cliff --config cliff.toml --unreleased -o CHANGES.md
