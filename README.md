@@ -15,7 +15,7 @@ input — Dependabot never sees it, so it can't try to bump it.
 ## Usage
 
 ```yaml
-- uses: ten-thousand-hammers/setup-git-cliff@v1
+- uses: uptick-dev/setup-git-cliff@v1
   with:
     version: "2.12.0"   # optional; this is the default
 
@@ -42,5 +42,5 @@ Linux and macOS, on `x86_64` and `arm64` — downloads the matching
 `*-unknown-linux-gnu` / `*-apple-darwin` release asset.
 
 Part of the changelog actions suite — used internally by
-[`changelog-generate`](https://github.com/ten-thousand-hammers/changelog-generate)
+[`changelog-generate`](https://github.com/uptick-dev/changelog-generate)
 and for the git-cliff fallback in release workflows.

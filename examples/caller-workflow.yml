@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 0   # git-cliff needs full history
 
-      - uses: ten-thousand-hammers/setup-git-cliff@v1
+      - uses: uptick-dev/setup-git-cliff@v1
         with:
           version: "2.12.0"
 
